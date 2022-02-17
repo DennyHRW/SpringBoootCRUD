@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+<script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+
+
+<meta charset="utf-8">
+<link th:rel="stylesheet" th:href="@{/bootstrap/css/flatly.min.css} " />
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Employee List</title>
+</head>
+<body>
+	<nav
+		class="navbar navbar-expand-lg sticky-top navbar-dark bg-primary py-2">
+		<a class="navbar-brand" href="./">NDS</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+			data-target="#navbarColor03" aria-controls="navbarColor03"
+			aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarColor03">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item mx-1 active"><a class="nav-link" href="#"><i
+						class="fa fa-book">&emsp;</i>Employee</a></li>
+		</div>
+	</nav>
+
+	<div class="col col-md-12" align="center">
+
+		<div class="col col-md-9 px-2 py-4">
+
+			<div class="card border-primary mb-3 shadow bg-white">
+				<div class="card-header">
+					<div class="row p-0">
+						<div class="col col-md-6 align-middle" align="left">
+							<h5 class="my-2">Number of
+								Employee(s)&emsp;:&emsp;[[|${numberOfEmployees}|]]</h5>
+						</div>
+						<div class="col-6" align="right">
+							<a th:data-buttonAction="add" data-toggle="modal"
+								th:data-action="@{employees/add}" href="#modal-addData"
+								type="button" class="btn btn-primary"> <i class="fa fa-plus"></i>
+								&emsp;Add New
+							</a>
+						</div>
+					</div>
+				</div>
+				<div class="card-body">
+					<form th:action="@{/employees}" method="" id="formSearch">
+						<fieldset>
+							<div class="row px-3">
+								<div class="col col-md-3 px-1" align="left">
+									<div class="form-group">
+										<label>Name</label> <input type="text" id="searchName" name=""
+											th:value="${param.name}" class="form-control"
+											placeholder="Employee's Name" pattern="[A-Za-z\s\.]+">
+									</div>
+								</div>
+								<div class="col col-md-3 px-1" align="left">
+									<div class="form-group">
+										<label>Date Joined</label> <input type="date" value=""
+											class="form-control" disabled>
+									</div>
+								</div>
+								<div class="col col-md-3 px-1" align="left">
+									<div class="form-group">
+										<label>Phone</label> <input type="text" id="searchPhone" name=""
+											th:value="${param.phone}" class="form-control"
+											placeholder="0xxxxxxxxxx" pattern="[0-9]+">
+									</div>
+								</div>
+								<div class="col col-md-2 ml-auto">
+									<div class="form-group">
+										<label>&nbsp;</label>
+										<button type="submit"
+											class="form-control btn btn-outline-info" id="btnSearch">
+											<i class="fa fa-search">&emsp;Search</i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+					</form>
+				</div>
+			</div>
+			<div class="table-responsive shadow bg-white">
+				<table class="table table-hover">
+					<thead class="table-primary">
+						<tr class="text-center">
+							<th width="10%">ID</th>
+							<th width="20%">Name</th>
+							<th width="12%">Phone</th>
+							<th width="15%">Salary</th>
+							<th width="auto">Date Joined</th>
+							<th width="auto">Last Updated</th>
+							<th class="text-center" width="15%"><i class="fa fa-gear"></i></th>
+						</tr>
+					</thead>
+					<tbody>
+
+						<!-- foreach -->
+						<tr th:each="employee: ${employees}">
+							<th class="text-center" scope="row"
+								th:text="'K-'+${#numbers.formatInteger(employee.employeeId,3)}"></th>
+							<td class="text-left" th:text="${employee.employeeName}"></td>
+							<td class="text-left" th:text="${employee.employeePhone}"></td>
+							<td class="text-left"
+								th:text="'Rp. '+${#numbers.formatInteger(employee.maxReimbursement,0,'POINT')}"></td>
+							<td class="text-right"
+								th:text="${employee.dateToDMY(employee.dateJoined)}"></td>
+							<td class="text-right"
+								th:text="${employee.dateToDMY(employee.lastUpdated)}"></td>
+							<td class="text-center">
+								<button th:data-buttonAction="edit"
+									th:data-url="@{employees/get/(id=${employee.employeeId})}
+								"
+									th:data-action="@{employees/edit/{id}(id=${employee.employeeId})}"
+									data-toggle="modal" data-target="#modal-addData"
+									class="btn btn-sm btn-outline-info mx-1">
+									<i class="fa fa-pencil"></i>
+								</button>
+								<button th:data-employeeid="${employee.employeeId}"
+									th:data-employeename="${employee.employeeName}"
+									th:data-url="@{employees/delete/{id}(id=${employee.employeeId})}"
+									data-toggle="modal" data-target="#modal-confirm" type="button"
+									class="btn btn-sm btn-outline-danger mx-1">
+									<i class="fa fa-trash-o"></i>
+								</button>
+							</td>
+						</tr>
+						<!-- end foreach -->
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<!-- modal-delete -->
+	<div class="modal fade" id="modal-confirm">
+		<div class="modal-dialog modal-dialog-centered modal-sm"
+			role="document">
+			<div class="modal-content bg-danger">
+				<div class="modal-header bg-danger text-white">
+					<h6 class="modal-title">
+						<strong id="employee-id-deleted">Delete Employee</strong>
+					</h6>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body bg-white px-5 py-3">
+					<div class="container text-center">
+						<h6>
+							Delete <br> <strong id="employee-name-deleted"
+								class="text-danger">Name here</strong> ?
+						</h6>
+					</div>
+				</div>
+				<div class="modal-footer bg-white">
+					<a id="confirmDelete" href="#"
+						class="btn btn-sm btn-outline-danger"> <i class="fa fa-check"></i>
+					</a>
+					<button type="reset" class="btn btn-sm btn-outline-secondary"
+						data-dismiss="modal">
+						<i class="fa fa-times"></i>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- modal-add -->
+	<div class="modal fade" id="modal-addData">
+		<div class="modal-dialog modal-dialog-centered modal-lg"
+			role="document">
+
+			<form class="form-horizontal" action="" th:object="${employee}"
+				method="POST" id="addData">
+				<fieldset>
+					<div class="modal-content bg-info">
+						<div class="modal-header bg-info text-white">
+							<h6 class="modal-title">
+								<strong id="headModalAdd">Add New Employee</strong>
+							</h6>
+							<button type="button" class="close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+
+						<div class="modal-body bg-white px-5 py-3">
+							<div class="row justify-content-between">
+								<div class="col col-md-6">
+									<div class="form-group">
+										<label>ID</label> <input type="text" value=""
+											name="employeeId" class="form-control" disabled=""
+											placeholder="Leave This Field Empty" pattern="[A-Za-z0-9]+">
+									</div>
+									<div class="form-group">
+										<label>Name</label> <input value="" class="form-control"
+											name="employeeName" placeholder="Employee's Name"
+											pattern="[A-Za-z\s\.]+" required>
+									</div>
+									<div class="form-group">
+										<label>Phone Number</label> <input value=""
+											name="employeePhone" class="form-control"
+											placeholder="Phone Number" pattern="[0-9]+" required>
+									</div>
+								</div>
+
+								<div class="col col-md-6">
+									<div class="form-group">
+
+										<div class="form-group">
+											<label>Date Joined</label> <input type="date" id="dateJoined"
+												name="dateJoined" max="" min="" class="form-control"
+												required>
+										</div>
+										<div class="form-group">
+											<label>Salary</label> <input type="number"
+												name="maxReimbursement" min="0" class="form-control"
+												pattern="[0-9]" required>
+										</div>
+									</div>
+								</div>
+
+								<div class="col col-md-6 mt-2">
+									<div class="form-group">
+										<label>Created</label> <input type="date" id="dpCreated"
+											name="dateCreated" class="form-control" readonly="true">
+									</div>
+								</div>
+								<div class="col col-md-6 mt-2">
+									<div class="form-group">
+										<label>Last Edited</label> <input type="date" id="dpUpdated"
+											name="lastUpdated" class="form-control" readonly="true">
+									</div>
+								</div>
+
+							</div>
+
+
+						</div>
+						<div class="modal-footer bg-white">
+							<button type="submit" name="action" value="addEmployee"
+								class="btn btn-md btn-outline-info">
+								<i class="fa fa-save"></i>
+							</button>
+							<button type="reset" class="btn btn-md btn-outline-secondary"
+								data-dismiss="modal">
+								<i class="fa fa-times"></i>
+							</button>
+						</div>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+
+
+	<script th:inline="javascript">
+	var searchName = $('#formSearch #searchName');
+	var searchPhone = $('#formSearch #searchPhone');
+	
+	$(document).ready(function(){
+		if(searchName.val()==null||searchName.val()=="") searchName.attr("name", "");
+		else  searchName.attr("name", "name");
+		if(searchPhone.val()==null||searchPhone.val()=="") searchPhone.attr("name", "");
+		else  searchPhone.attr("name", "phone");
+	
+	});	
+	
+	searchName.focusout(function(){
+		searchName.attr("value", searchName.val());
+		searchPhone.attr("value", searchPhone.val());
+	
+		if(searchName.val()==null||searchName.val()=="") searchName.attr("name", "");
+		else  searchName.attr("name", "name");
+		
+		if(searchPhone.val()==null||searchPhone.val()=="") searchPhone.attr("name", "");
+		else  searchPhone.attr("name", "phone");
+
+	});
+	
+	
+	searchPhone.focusout(function(){
+		searchName.attr("value", searchName.val());
+		searchPhone.attr("value", searchPhone.val());
+	
+		if(searchName.val()==null||searchName.val()=="") searchName.attr("name", "");
+		else  searchName.attr("name", "name");
+		
+		if(searchPhone.val()==null||searchPhone.val()=="") searchPhone.attr("name", "");
+		else  searchPhone.attr("name", "phone");
+	});
+	
+    $('#modal-confirm').on('show.bs.modal', function(e) {
+      var id = $(e.relatedTarget).data('employeeid');
+      var name = $(e.relatedTarget).data('employeename');
+      var url = $(e.relatedTarget).data('url');
+      
+      $(e.currentTarget).find('input[name="employeeId"]').val(id);
+      $('#employee-name-deleted').html(name);
+      $('#employee-id-deleted').html("ID : "+id);
+      $('#confirmDelete').attr("href", url);
+    }); 
+    
+    
+    $('#modal-addData').on('show.bs.modal', function(e) {
+    	var btnAction = $(e.relatedTarget).data('buttonaction');
+      	let now = new Date(); 
+      	
+      	let now1 = new Date(); 
+	  	var maxDate = new Date(now1.setMonth(now1.getMonth()+3)); 
+		var day1 = ("0" + maxDate.getDate()).slice(-2);
+		var month1 = ("0" + (maxDate.getMonth() + 1)).slice(-2);
+		var today1 = maxDate.getFullYear()+"-"+(month1)+"-"+(day1) ;	
+		$('#dateJoined').attr('max', today1); 
+		
+		let now2 = new Date(); 
+		var minDate = new Date(now2.setMonth(now2.getMonth()-2)); 
+		var day2 = ("0" + minDate.getDate()).slice(-2);
+		var month2 = ("0" + (minDate.getMonth() + 1)).slice(-2); 
+		var today2 = minDate.getFullYear()+"-"+(month2)+"-"+(day2) ;	
+		$('#dateJoined').attr('min', today2);
+    
+	    if(btnAction=="edit"){ 
+	    	var url = $(e.relatedTarget).data('url');
+	    	$.get(url, function(employee, status){ 
+		      	$(e.currentTarget).find('input[name="employeeId"]').val(employee.employeeId);
+		      	$(e.currentTarget).find('input[name="employeeName"]').val(employee.employeeName);
+		      	$(e.currentTarget).find('input[name="employeePhone"]').val(employee.employeePhone);
+		      	$(e.currentTarget).find('input[name="dateJoined"]').val(employee.dateJoined);
+		      	$(e.currentTarget).find('input[name="dateCreated"]').val(employee.dateCreated);
+		      	$(e.currentTarget).find('input[name="maxReimbursement"]').val(employee.maxReimbursement);
+		      	$(e.currentTarget).find('input[name="lastUpdated"]').val(employee.lastUpdated);
+	    	});
+	    	
+	    	$('#headModalAdd').html("Edit Employee's Data");
+	    	
+	      	var action 	= $(e.relatedTarget).data('action'); 
+      		$('#addData').attr("action", action);
+	      	
+	    }
+	    
+	    
+	    if(btnAction=="add"){ 
+	    	$('#headModalAdd').html("Add New Employee");
+	      	var action 			= $(e.relatedTarget).data('action'); 
+      		$('#addData').attr("action", action);
+      		
+	      	var day = ("0" + now.getDate()).slice(-2);
+			var month = ("0" + (now.getMonth() + 1)).slice(-2);
+			var today = now.getFullYear()+"-"+(month)+"-"+(day);		
+			$('#dpCreated').attr('value', today); 	
+			$('#dpUpdated').attr('value', today); 
+	
+	    } 
+
+	
+    }); 
+    
+	$('#modal-addData').on('hidden.bs.modal', function () {
+	    $('#modal-addData form')[0].reset();
+	});
+
+	  
+	  </script>
+
+</body>
+</html>
